@@ -30,8 +30,9 @@ def gen_prep_dim(tblname):
     ls_cols = []
     for i in range(4):
         ls_cols.append(table_col_name.format(tblname, i + 1, "BIGINT"))
-    for i in range(4, 7):
+    for i in range(4, 6):
         ls_cols.append(table_col_name.format(tblname, i + 1, "DECIMAL"))
+    ls_cols.append(table_col_name.format(tblname,7, "CHAR(15)"))
     return ",".join(ls_cols)
 
 
