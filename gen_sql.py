@@ -129,6 +129,7 @@ def gen_sql_fact_table_partitioned_load(tblname, orctblname, num_parts, prim_wid
     fin_cols = []
     for i in range(len(ls_col_orc)):
         fin_cols.append(temp.format(ls_col_org[i].split(" ")[0], ls_col_orc[i].split(" ")[0]))
+    fin_cols = fin_cols[num_parts:] + fin_cols[:num_parts]
     fin_cols = ",".join(fin_cols)
     file.write(insert_fact_stmt_template.format(orctblname, fin_part, fin_cols, tblname))
     file.write("\n")

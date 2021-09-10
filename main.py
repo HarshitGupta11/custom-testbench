@@ -7,12 +7,12 @@ from gen_sql import gen_sql_fact_table_orc
 from gen_sql import gen_sql_dim_table_overwrite
 from gen_sql import gen_sql_fact_table_partitioned_load
 
-part = 10
+part = 5
 part_depth = 1
-prim_width = 4
-rand_width = 8
-num_rows_part = 100
-num_rows_dim = 25
+prim_width = 1
+rand_width = 1
+num_rows_part = 1
+num_rows_dim = 2
 dir = "/tmp/"
 
 dim_table_name = "dim_table_txt_{}"
