@@ -1,6 +1,6 @@
 drop_dim_table_template = "DROP TABLE IF EXISTS {};"
 
-create_table_template = """CREATE TABELE {}({})
+create_table_template = """CREATE TABLE {}({})
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ',' 
 LINES TERMINATED BY '\\n'
