@@ -25,6 +25,7 @@ def get_rand_string(n):
         ls.append(id_generator(10))
     return ls
 
+
 def get_choice_from_list(ls, n):
     ret = []
     for i in range(n):

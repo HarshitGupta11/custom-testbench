@@ -19,7 +19,7 @@ def gen_data_for_part(part_id, num_rows, prim_keys, prim_key_width, random_width
     prim_values = [list(x) for x in prim_values]
     # half the columns in the random space would be decimal and half would be integer
     num_int = random_width // 2
-    if num_int % 2 == 0:
+    if num_int % 2 != 0:
         num_int += 1
     num_dec = random_width - num_int
     rand_cols = []
