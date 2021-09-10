@@ -23,7 +23,7 @@ PARTITIONED BY ({})
 STORED AS ORC;"""
 
 insert_fact_stmt_template = """INSERT OVERWRITE TABLE {} PARTITION ({})
-SELECT * FROM {};"""
+SELECT {} FROM {};"""
 
 
 def gen_prep_dim(tblname):
@@ -32,11 +32,11 @@ def gen_prep_dim(tblname):
         ls_cols.append(table_col_name.format(tblname, i + 1, "BIGINT"))
     for i in range(4, 6):
         ls_cols.append(table_col_name.format(tblname, i + 1, "DECIMAL"))
-    ls_cols.append(table_col_name.format(tblname,7, "CHAR(15)"))
+    ls_cols.append(table_col_name.format(tblname, 7, "CHAR(15)"))
     return ",".join(ls_cols)
 
 
-def gen_prep_fact(tblname, num_parts, num_prim_key, rand_width):
+def gen_prep_fact(tblname, num_parts, num_prim_key, rand_width, ret_list=False):
     ls_cols = []
     for i in range(num_parts):
         ls_cols.append(part_table_col_name.format(tblname, i + 1, "BIGINT"))
@@ -50,6 +50,8 @@ def gen_prep_fact(tblname, num_parts, num_prim_key, rand_width):
         ls_cols.append(table_col_name.format(tblname, i + 1 + num_prim_key, "BIGINT"))
     for i in range(num_decimal):
         ls_cols.append(table_col_name.format(tblname, i + 1 + num_prim_key + num_int, "DECIMAL"))
+    if ret_list:
+        return ls_cols
     return ",".join(ls_cols)
 
 
@@ -79,7 +81,7 @@ def gen_sql_dim_table_overwrite(tblname, orctblname, file):
     return
 
 
-def gen_sql_fact_table(tablename, num_parts, num_prim, rand_width,file):
+def gen_sql_fact_table(tablename, num_parts, num_prim, rand_width, file):
     file.write(drop_dim_table_template.format(tablename))
     file.write("\n")
     # generate the create table stmt
@@ -114,13 +116,20 @@ def gen_sql_fact_table_orc(tblname, num_parts, num_prim, rand_width, file):
     return
 
 
-def gen_sql_fact_table_partitioned_load(tblname, orctblname, num_parts,file):
+def gen_sql_fact_table_partitioned_load(tblname, orctblname, num_parts, prim_width, rand_width, file):
     # generate the insert overwrite stmt
     part_temp = "{}_part_col_{}"
     ls_parts = []
     for i in range(num_parts):
-        ls_parts.append(part_temp.format(tblname, i + 1))
+        ls_parts.append(part_temp.format(orctblname, i + 1))
     fin_part = ",".join(ls_parts)
-    file.write(insert_fact_stmt_template.format(orctblname, fin_part, tblname))
+    ls_col_org = gen_prep_fact(tblname, num_parts, prim_width, rand_width, True)
+    ls_col_orc = gen_prep_fact(orctblname, num_parts, prim_width, rand_width, True)
+    temp = "{} as {}"
+    fin_cols = []
+    for i in range(len(ls_col_orc)):
+        fin_cols.append(temp.format(ls_col_org[i].split(" ")[0], ls_col_orc[i].split(" ")[0]))
+    fin_cols = ",".join(fin_cols)
+    file.write(insert_fact_stmt_template.format(orctblname, fin_part, fin_cols, tblname))
     file.write("\n")
     return

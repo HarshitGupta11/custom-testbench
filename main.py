@@ -9,9 +9,9 @@ from gen_sql import gen_sql_fact_table_partitioned_load
 
 part = 10
 part_depth = 1
-prim_width = 2
+prim_width = 4
 rand_width = 8
-num_rows_part = 10
+num_rows_part = 100
 num_rows_dim = 25
 dir = "/tmp/"
 
@@ -41,7 +41,7 @@ for i in range(prim_width):
 for i in range(2):
     gen_sql_fact_table_orc(fact_table_orc_name.format(i + 1), part_depth, prim_width, rand_width, file)
     gen_sql_fact_table_partitioned_load(fact_table_name.format(i + 1), fact_table_orc_name.format(i + 1), part_depth,
-                                        file)
+                                        prim_width,rand_width,file)
 
 file.close()
 print("Done")
