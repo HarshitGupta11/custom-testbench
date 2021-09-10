@@ -9,7 +9,7 @@ STORED AS TEXTFILE;"""
 table_col_name = """{}_col_{} {}"""
 part_table_col_name = """{}_part_col_{} {}"""
 
-load_data_template = """LOAD DATA LOCAL INPATH "/tmp/{} INTO TABLE {};"""
+load_data_template = """LOAD DATA LOCAL INPATH "/tmp/{}" INTO TABLE {};"""
 
 create_table_template_dim_orc = """CREATE TABLE {}({})
 STORED AS ORC;"""
@@ -65,6 +65,8 @@ def gen_sql_dim_table(tablename, file):
 
 def gen_sql_dim_table_orc(tblname, file):
     col_names = gen_prep_dim(tblname)
+    file.write(drop_dim_table_template.format(tblname))
+    file.write("\n")
     file.write(create_table_template_dim_orc.format(tblname, col_names))
     file.write("\n")
     return
@@ -104,6 +106,8 @@ def gen_sql_fact_table_orc(tblname, num_parts, num_prim, rand_width, file):
         ls_cols.append(table_col_name.format(tblname, i + 1 + num_int, "DECIMAL"))
     fin_col = ",".join(ls_cols)
     fin_part_col = ",".join(ls_parts)
+    file.write(drop_dim_table_template.format(tblname))
+    file.write("\n")
     file.write(create_table_template_fact_orc.format(tblname, fin_col, fin_part_col))
     file.write("\n")
     return
